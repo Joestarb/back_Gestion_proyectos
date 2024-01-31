@@ -48,7 +48,7 @@ CREATE TABLE recurso (
 );
 
 -- Tabla estado
-CREATE TABLE estado (
+CREATE TABLE   (
   id_estado INT NOT NULL AUTO_INCREMENT,
   nombre VARCHAR(255) NOT NULL,
   PRIMARY KEY (id_estado)

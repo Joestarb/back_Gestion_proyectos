@@ -5,6 +5,8 @@ from Routes.rol_routes import rol_router
 from Routes.miembro_routes import miembro_router
 from Routes.recurso_routes import recurso_router
 from Routes.estado_routes import estado_routes
+from Routes.proyecto_routes import proyecto_routes
+
 
 
 
@@ -30,6 +32,8 @@ app.include_router(miembro_router)
 app.include_router(recurso_router)
 app.include_router(recurso_router)
 app.include_router(estado_routes)
+app.include_router(proyecto_routes)
+
 
 
 
