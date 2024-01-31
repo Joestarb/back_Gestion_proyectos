@@ -1,0 +1,35 @@
+# Entornos virtuales
+venv/
+env/
+
+# Archivos de caché
+__pycache__/
+
+# Archivos generados durante la ejecución
+*.pyc
+*.pyo
+*.pyd
+
+# Archivos de configuración local
+.env
+
+# Carpeta de construcción del proyecto
+build/
+dist/
+
+# Carpeta de registro
+log/
+
+# Archivos de base de datos
+*.sqlite
+*.db
+
+# Carpeta de archivos estáticos generados
+static/
+
+# Carpeta de archivos subidos
+uploads/
+
+# Carpeta de dependencias instaladas
+lib/
+lib64/
