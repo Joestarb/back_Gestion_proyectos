@@ -19,5 +19,6 @@ class MiembroResponse(BaseModel):
     id_miembro: int
     nombre: str
     correo_electronico: str
+    contrasena: str
     fk_rol: int
     fk_equipo: int

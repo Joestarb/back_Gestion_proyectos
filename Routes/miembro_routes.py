@@ -56,18 +56,32 @@ async def get_miembro(miembro_id: int):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-
-@miembro_router.put("/miembro/{miembro_id}", response_model=MiembroResponse)
+@miembro_router.put("/miembro/{miembro_id}", response_model=dict)
 async def update_miembro(miembro_id: int, miembro_update: MiembroUpdate = Body(...)):
     try:
         with connection.cursor() as cursor:
+            # Construir la consulta SQL de actualización dinámicamente
             update_fields = {k: v for k, v in miembro_update.dict(exclude_unset=True).items() if v is not None}
             if not update_fields:
-                raise HTTPException(status_code=400, detail="No se proporcionaron campos para actualizar")
+                raise HTTPException(status_code=400, detail="No fields to update")
+
+            set_clause = ", ".join([f"{field} = %s" for field in update_fields])
+            query = f"UPDATE miembro SET {set_clause} WHERE id_miembro = %s"
+
+            # Construir los valores para la consulta SQL
+            values = list(update_fields.values()) + [miembro_id]
+
+            cursor.execute(query, values)
+            connection.commit()
+
+            if cursor.rowcount > 0:
+                return {"message": "Miembro updated successfully"}
+            else:
+                raise HTTPException(status_code=404, detail="Miembro not found")
+
     except Exception as e:
-        print(f"Error: {str(e)}")
-        raise HTTPException(status_code=500, detail="Error interno del servidor")
-    
+        raise HTTPException(status_code=500, detail=str(e))
+
 @miembro_router.delete("/miembro/{miembro_id}", response_model=dict)
 async def delete_miembro(miembro_id: int):
     try:

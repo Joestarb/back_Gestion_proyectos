@@ -30,7 +30,6 @@ app.include_router(equipo)
 app.include_router(rol_router)
 app.include_router(miembro_router)
 app.include_router(recurso_router)
-app.include_router(recurso_router)
 app.include_router(estado_routes)
 app.include_router(proyecto_routes)
 
