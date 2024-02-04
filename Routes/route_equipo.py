@@ -85,14 +85,14 @@ async def update_equipo(equipo_id: int, equipo_update: EquipoUpdate = Body(...))
 async def delete_equipo(equipo_id: int):
     try:
         with connection.cursor() as cursor:
-            # Desvincular proyectos asociados al equipo
-            update_proyectos_query = "UPDATE proyecto SET fk_equipo = NULL WHERE fk_equipo = %s"
-            cursor.execute(update_proyectos_query, equipo_id)
+            # Desvincular miembros asociados al equipo
+            update_miembros_query = "UPDATE miembro SET fk_equipo = NULL WHERE fk_equipo = %s"
+            cursor.execute(update_miembros_query, equipo_id)
             connection.commit()
 
-            # Eliminar miembros asociados al equipo
-            delete_miembros_query = "DELETE FROM miembro WHERE fk_equipo = %s"
-            cursor.execute(delete_miembros_query, equipo_id)
+            # Eliminar proyectos asociados al equipo
+            update_proyectos_query = "UPDATE proyecto SET fk_equipo = NULL WHERE fk_equipo = %s"
+            cursor.execute(update_proyectos_query, equipo_id)
             connection.commit()
 
             # Eliminar el equipo
@@ -101,9 +101,10 @@ async def delete_equipo(equipo_id: int):
             connection.commit()
 
             if cursor.rowcount > 0:
-                return {"message": "Equipo disassociated from proyectos and deleted successfully"}
+                return {"message": "Equipo disassociated from miembros, proyectos, and deleted successfully"}
             else:
                 raise HTTPException(status_code=404, detail="Equipo not found")
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
