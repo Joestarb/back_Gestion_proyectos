@@ -1,7 +1,8 @@
 # Archivo: Models/miembro_routes.py
 from fastapi import APIRouter, HTTPException, Body
 from Config.database import connection
-from Models.miebro_models import MiembroCreate, MiembroUpdate, MiembroResponse
+from Models.miembro_models import MiembroCreate, MiembroUpdate, MiembroResponse
+
 from Models.equipo_models import EquipoResponse
 miembro_router = APIRouter()
 
@@ -32,37 +33,29 @@ async def get_all_miembros():
             miembros = cursor.fetchall()
 
             if miembros:
-                return miembros
+                return [MiembroResponse(**miembro) for miembro in miembros]
             else:
                 raise HTTPException(status_code=404, detail="No miembros found")
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-    
-@miembro_router.get("/miembros/{equipo_id}/equipo", response_model=dict)
-async def get_equipo_and_miembros(equipo_id: int):
+
+@miembro_router.get("/miembro/{miembro_id}", response_model=MiembroResponse)
+async def get_miembro(miembro_id: int):
     try:
         with connection.cursor() as cursor:
-            # Obtener información del equipo
-            equipo_query = "SELECT * FROM equipo WHERE id_equipo = %s"
-            cursor.execute(equipo_query, equipo_id)
-            equipo = cursor.fetchone()
+            query = "SELECT * FROM miembro WHERE id_miembro = %s"
+            cursor.execute(query, miembro_id)
+            miembro = cursor.fetchone()
 
-            if not equipo:
-                raise HTTPException(status_code=404, detail="Equipo not found")
-
-            # Obtener miembros del equipo
-            miembros_query = "SELECT * FROM miembro WHERE fk_equipo = %s"
-            cursor.execute(miembros_query, equipo_id)
-            miembros = cursor.fetchall()
-
-            equipo_info = EquipoResponse(**equipo)
-            miembros_info = [MiembroResponse(**miembro) for miembro in miembros]
-
-            return {"equipo": equipo_info, "miembros": miembros_info}
+            if miembro:
+                return MiembroResponse(**miembro)
+            else:
+                raise HTTPException(status_code=404, detail="Miembro not found")
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
 
 @miembro_router.get("/miembro/{miembro_id}", response_model=MiembroResponse)
 async def get_miembro(miembro_id: int):

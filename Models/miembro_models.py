@@ -1,5 +1,7 @@
 # Archivo: Models/miembro_models.py
 from pydantic import BaseModel
+from typing import Optional
+
 
 class MiembroCreate(BaseModel):
     nombre: str
@@ -21,4 +23,4 @@ class MiembroResponse(BaseModel):
     correo_electronico: str
     contrasena: str
     fk_rol: int
-    fk_equipo: int
+    fk_equipo: Optional[int]
