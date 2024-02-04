@@ -19,7 +19,7 @@ class ProyectoInDBBase(ProyectoBase):
     id_proyecto: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class Proyecto(ProyectoInDBBase):
     pass

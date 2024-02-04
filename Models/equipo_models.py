@@ -8,3 +8,10 @@ class EquipoCreate(BaseModel):
 # Define la clase para la actualización de un equipo existente
 class EquipoUpdate(BaseModel):
     nombre: str = None
+    
+class EquipoResponse(BaseModel):
+    id_equipo: int
+    nombre: str
+
+    class Config:
+        from_attributes = True

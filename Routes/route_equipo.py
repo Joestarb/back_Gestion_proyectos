@@ -81,18 +81,29 @@ async def update_equipo(equipo_id: int, equipo_update: EquipoUpdate = Body(...))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-# Endpoint para eliminar un equipo por ID
 @equipo.delete("/equipo/{equipo_id}", response_model=dict)
 async def delete_equipo(equipo_id: int):
     try:
         with connection.cursor() as cursor:
-            query = "DELETE FROM equipo WHERE id_equipo = %s"
-            cursor.execute(query, equipo_id)
+            # Desvincular proyectos asociados al equipo
+            update_proyectos_query = "UPDATE proyecto SET fk_equipo = NULL WHERE fk_equipo = %s"
+            cursor.execute(update_proyectos_query, equipo_id)
+            connection.commit()
+
+            # Eliminar miembros asociados al equipo
+            delete_miembros_query = "DELETE FROM miembro WHERE fk_equipo = %s"
+            cursor.execute(delete_miembros_query, equipo_id)
+            connection.commit()
+
+            # Eliminar el equipo
+            delete_equipo_query = "DELETE FROM equipo WHERE id_equipo = %s"
+            cursor.execute(delete_equipo_query, equipo_id)
             connection.commit()
 
             if cursor.rowcount > 0:
-                return {"message": "Equipo deleted successfully"}
+                return {"message": "Equipo disassociated from proyectos and deleted successfully"}
             else:
                 raise HTTPException(status_code=404, detail="Equipo not found")
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

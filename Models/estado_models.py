@@ -13,7 +13,7 @@ class EstadoInDBBase(EstadoBase):
     id_estado: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class Estado(EstadoInDBBase):
     pass
