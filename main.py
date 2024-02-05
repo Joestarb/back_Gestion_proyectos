@@ -8,8 +8,6 @@ from Routes.estado_routes import estado_routes
 from Routes.proyecto_routes import proyecto_routes
 
 
-
-
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -32,6 +30,7 @@ app.include_router(miembro_router)
 app.include_router(recurso_router)
 app.include_router(estado_routes)
 app.include_router(proyecto_routes)
+
 
 
 

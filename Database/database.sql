@@ -7,7 +7,7 @@ CREATE TABLE admin (
     id_admin INT AUTO_INCREMENT,
     nombre VARCHAR(50),
     correo_electronico VARCHAR(100),
-    contrasena VARCHAR(50),
+    contrasena VARCHAR(100),
     PRIMARY KEY (id_admin)
 );
 

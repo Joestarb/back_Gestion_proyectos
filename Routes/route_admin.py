@@ -1,17 +1,35 @@
-from fastapi import HTTPException, APIRouter, Body
+from fastapi import APIRouter, HTTPException, Body
 from Config.database import connection
 from Models.admin_models import AdminCreate, AdminUpdate
-
+from Routes.token_route import  create_access_token, authenticate_admin, hash_password
+from datetime import datetime, timedelta
 # Inicializar la aplicación FastAPI
 admin = APIRouter()
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
+# Endpoint para crear un nuevo admin
+# Endpoint para iniciar sesión y obtener un token de acceso
+@admin.post("/token", response_model=dict)
+async def login_for_access_token(form_data: AdminCreate = Body(...)):
+    admin_data = authenticate_admin(form_data.correo_electronico, form_data.contrasena)
+
+    if admin_data:
+        # Generar token de acceso
+        access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        access_token = create_access_token(data={"sub": admin_data['correo_electronico']}, expires_delta=access_token_expires)
+        return {"access_token": access_token, "token_type": "bearer"}
+    else:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
 
 # Endpoint para crear un nuevo admin
 @admin.post("/admin/", response_model=dict)
 async def create_admin(admin: AdminCreate = Body(...)):
     try:
         with connection.cursor() as cursor:
+            # Hashear la contraseña antes de almacenarla en la base de datos
+            hashed_password = hash_password(admin.contrasena)
+
             query = "INSERT INTO admin (nombre, correo_electronico, contrasena) VALUES (%s, %s, %s)"
-            values = (admin.nombre, admin.correo_electronico, admin.contrasena)
+            values = (admin.nombre, admin.correo_electronico, hashed_password)
             cursor.execute(query, values)
             connection.commit()
 
@@ -20,7 +38,6 @@ async def create_admin(admin: AdminCreate = Body(...)):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
 # Endpoint para obtener todos los admins
 @admin.get("/admin/", response_model=list)
 async def get_all_admins():
