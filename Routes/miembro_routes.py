@@ -1,20 +1,38 @@
 # Archivo: Models/miembro_routes.py
-from fastapi import APIRouter, HTTPException, Body
+from fastapi import APIRouter, HTTPException, Body,Depends
 from Config.database import connection
+from datetime import datetime, timedelta
+from Auth.auth_member import create_access_token_member, authenticate_member, hash_password_member
 from Models.miembro_models import MiembroCreate, MiembroUpdate, MiembroResponse
-
 from Models.equipo_models import EquipoResponse
+
+
+ACCESS_TOKEN_EXPIRE_MINUTES_MEMBER = 30
 miembro_router = APIRouter()
+@miembro_router.post("/miembro/token", response_model=dict)
+async def login_member_for_access_token(form_data: MiembroCreate = Body(...)):
+    member_data = authenticate_member(form_data.correo_electronico, form_data.contrasena)
+
+    if member_data:
+        access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES_MEMBER)
+        access_token = create_access_token_member(data={"sub": member_data['correo_electronico']}, expires_delta=access_token_expires)
+        return {"access_token": access_token, "token_type": "bearer"}
+    else:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+
 
 @miembro_router.post("/miembro/", response_model=MiembroResponse)
 async def create_miembro(miembro: MiembroCreate = Body(...)):
     try:
         with connection.cursor() as cursor:
+            # Hashear la contraseña antes de almacenarla
+            hashed_password = hash_password_member(miembro.contrasena)
+
             query = """
                 INSERT INTO miembro (nombre, correo_electronico, contrasena, fk_rol, fk_equipo)
                 VALUES (%s, %s, %s, %s, %s)
             """
-            values = (miembro.nombre, miembro.correo_electronico, miembro.contrasena, miembro.fk_rol, miembro.fk_equipo)
+            values = (miembro.nombre, miembro.correo_electronico, hashed_password, miembro.fk_rol, miembro.fk_equipo)
             cursor.execute(query, values)
             connection.commit()
 
