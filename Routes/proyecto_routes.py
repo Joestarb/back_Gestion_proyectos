@@ -44,10 +44,35 @@ async def get_proyecto(proyecto_id: int):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
-
 @proyecto_routes.put("/proyecto/{proyecto_id}", response_model=Proyecto)
 async def update_proyecto(proyecto_id: int, proyecto_update: ProyectoUpdate = Body(...)):
+    try:
+        with connection.cursor() as cursor:
+            query = """
+                UPDATE proyecto
+                SET nombre = %s, descripcion = %s, fecha_inicio = %s, fk_equipo = %s, fk_estado = %s, fk_recurso = %s
+                WHERE id_proyecto = %s
+            """
+            values = (
+                proyecto_update.nombre,
+                proyecto_update.descripcion,
+                proyecto_update.fecha_inicio,
+                proyecto_update.fk_equipo,
+                proyecto_update.fk_estado,
+                proyecto_update.fk_recurso,
+                proyecto_id,
+            )
+            cursor.execute(query, values)
+            connection.commit()
+
+            if cursor.rowcount > 0:
+                # Devuelve el objeto Pydantic con el id_proyecto
+                return Proyecto(id_proyecto=proyecto_id, **proyecto_update.dict())
+            else:
+                raise HTTPException(status_code=404, detail="Proyecto not found")
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
     try:
         with connection.cursor() as cursor:
             query = """
