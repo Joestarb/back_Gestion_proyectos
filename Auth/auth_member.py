@@ -21,11 +21,11 @@ def create_access_token_member(data: dict, expires_delta: timedelta):
 def hash_password_member(password: str):
     return pwd_context_member.hash(password)
 
-def authenticate_member(email: str, password: str):
+def authenticate_member(nombre: str, password: str):
     try:
         with connection.cursor() as cursor:
-            query = "SELECT * FROM miembro WHERE correo_electronico = %s"
-            cursor.execute(query, email)
+            query = "SELECT * FROM miembro WHERE nombre = %s"
+            cursor.execute(query, nombre)
             member = cursor.fetchone()
 
             if member and pwd_context_member.verify(password, member['contrasena']):
