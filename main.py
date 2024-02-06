@@ -6,11 +6,13 @@ from Routes.miembro_routes import miembro_router
 from Routes.recurso_routes import recurso_router
 from Routes.estado_routes import estado_routes
 from Routes.proyecto_routes import proyecto_routes
-
+import ssl
 
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+ssl_context.load_cert_chain('localhost.crt', keyfile='localhost.key')
 # Configuración para permitir todos los orígenes, todos los métodos y encabezados específicos
 origins = ["*"]
 

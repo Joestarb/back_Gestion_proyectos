@@ -3,7 +3,7 @@ import pymysql
 connection = pymysql.connect(
     host='localhost',
     user='root',
-    password='arbeybachi1',
+    password='',
     database='gestion_sw',
     cursorclass=pymysql.cursors.DictCursor
 )
