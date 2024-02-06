@@ -9,7 +9,8 @@ from Routes.proyecto_routes import proyecto_routes
 
 
 from fastapi.middleware.cors import CORSMiddleware
-
+   
+   
 app = FastAPI()
 # Configuración para permitir todos los orígenes, todos los métodos y encabezados específicos
 origins = ["*"]
