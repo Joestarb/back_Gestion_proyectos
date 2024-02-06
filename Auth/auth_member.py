@@ -11,10 +11,10 @@ ACCESS_TOKEN_EXPIRE_MINUTES_MEMBER = 30
 
 pwd_context_member = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-def create_access_token_member(data: dict, expires_delta: timedelta):
+def create_access_token_member(data: dict, expires_delta: timedelta, rol: str = "miembro"):
     to_encode = data.copy()
     expire = datetime.utcnow() + expires_delta
-    to_encode.update({"exp": expire})
+    to_encode.update({"exp": expire, "rol": rol})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY_MEMBER, algorithm=ALGORITHM_MEMBER)
     return encoded_jwt
 
