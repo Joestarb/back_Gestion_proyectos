@@ -9,7 +9,8 @@ from Routes.proyecto_routes import proyecto_routes
 import ssl
 
 from fastapi.middleware.cors import CORSMiddleware
-
+   
+   
 app = FastAPI()
 ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
 ssl_context.load_cert_chain('localhost.crt', keyfile='localhost.key')

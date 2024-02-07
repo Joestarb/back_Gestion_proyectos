@@ -4,6 +4,27 @@ from Models.proyecto_models import Proyecto, ProyectoCreate, ProyectoUpdate
 
 proyecto_routes = APIRouter()
 
+@proyecto_routes.get("/proyecto/miembro/{miembro_id}", response_model=list[Proyecto])
+async def get_proyectos_by_miembro(miembro_id: int):
+    try:
+        with connection.cursor() as cursor:
+            query = """
+                SELECT p.*
+                FROM proyecto p
+                JOIN miembro_proyecto mp ON p.id_proyecto = mp.fk_proyecto
+                JOIN miembro m ON mp.fk_miembro = m.id_miembro
+                WHERE m.id_miembro = %s
+            """
+            cursor.execute(query, miembro_id)
+            proyectos = cursor.fetchall()
+
+            if proyectos:
+                return proyectos
+            else:
+                raise HTTPException(status_code=404, detail=f"No projects found for member with id {miembro_id}")
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 @proyecto_routes.post("/proyecto/", response_model=Proyecto)
 async def create_proyecto(proyecto_create: ProyectoCreate = Body(...)):
     try:

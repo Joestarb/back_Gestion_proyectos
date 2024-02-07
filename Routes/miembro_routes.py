@@ -9,6 +9,7 @@ from Models.equipo_models import EquipoResponse
 
 ACCESS_TOKEN_EXPIRE_MINUTES_MEMBER = 30
 miembro_router = APIRouter()
+
 @miembro_router.post("/miembro/token", response_model=dict)
 async def login_member_for_access_token(form_data: MiembroCreate = Body(...)):
     member_data = authenticate_member(form_data.nombre, form_data.contrasena)
