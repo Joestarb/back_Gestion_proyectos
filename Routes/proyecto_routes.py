@@ -109,9 +109,10 @@ async def get_all_proyectos():
             proyectos = cursor.fetchall()
 
             if proyectos:
-                return proyectos
+             return proyectos
             else:
-                raise HTTPException(status_code=404, detail="No proyectos found")
+             return []
+
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
